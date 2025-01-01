@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useHizbDetail } from "@/services/api/hizbApi";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,20 +10,7 @@ const HizbPage = () => {
   const { toast } = useToast();
   const hizbNumber = parseInt(id || "1");
 
-  const { data: hizbData, isLoading, error } = useQuery({
-    queryKey: ["hizb", hizbNumber],
-    queryFn: async () => {
-      // Mock data for now - replace with actual API call later
-      return {
-        number: hizbNumber,
-        verses: [
-          { number: 1, text: "Sample verse 1", translation: "Translation 1" },
-          { number: 2, text: "Sample verse 2", translation: "Translation 2" },
-        ],
-        totalVerses: 2,
-      };
-    },
-  });
+  const { data: hizbData, isLoading, error } = useHizbDetail(hizbNumber);
 
   if (isLoading) {
     return (
@@ -87,9 +74,26 @@ const HizbPage = () => {
             className="p-6 bg-white rounded-lg shadow-sm border border-gray-200"
           >
             <div className="flex justify-between items-start mb-4">
-              <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
-                {verse.number}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
+                  {verse.number}
+                </span>
+                {verse.sajda && (
+                  <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-sm">
+                    Sajda
+                  </span>
+                )}
+                {verse.ruku && (
+                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
+                    Ruku {verse.ruku}
+                  </span>
+                )}
+                {verse.manzil && (
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
+                    Manzil {verse.manzil}
+                  </span>
+                )}
+              </div>
             </div>
             <p className="text-2xl mb-4 font-arabic text-right leading-loose">
               {verse.text}

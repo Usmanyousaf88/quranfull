@@ -1,16 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { BookOpen } from "lucide-react";
+import { useQuranMetadata } from "@/services/api/metadataApi";
 
 interface HizbCardProps {
   number: number;
-  startSurah: string;
-  endSurah: string;
-  versesCount: number;
 }
 
-const HizbCard: React.FC<HizbCardProps> = ({ number, startSurah, endSurah, versesCount }) => {
+const HizbCard: React.FC<HizbCardProps> = ({ number }) => {
   const navigate = useNavigate();
+  const { data: metadata } = useQuranMetadata();
+
+  const hizbData = metadata?.juzs.references.find(
+    (juz) => Math.ceil(number / 2) === juz.number
+  );
 
   return (
     <div 
@@ -24,12 +27,13 @@ const HizbCard: React.FC<HizbCardProps> = ({ number, startSurah, endSurah, verse
           </div>
           <div>
             <h3 className="text-xl font-semibold">Hizb {number}</h3>
-            <p className="text-gray-600 text-lg">{startSurah} - {endSurah}</p>
+            <p className="text-gray-600 text-lg">
+              {hizbData ? `${Math.ceil(hizbData.versesCount / 2)} verses` : 'Loading...'}
+            </p>
           </div>
         </div>
         <BookOpen className="text-primary h-6 w-6" />
       </div>
-      <p className="mt-4 text-gray-500 text-lg">{versesCount} verses</p>
     </div>
   );
 };
