@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Book, BookOpen, Bookmark } from "lucide-react";
+import ReadingGoalDialog from "./ReadingGoalDialog";
 
 interface QuranStatsProps {
   dailyProgress?: {
@@ -24,7 +25,10 @@ const QuranStats = ({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Daily Progress</CardTitle>
-          <BookOpen className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <ReadingGoalDialog currentGoal={dailyProgress.dailyGoal} />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">

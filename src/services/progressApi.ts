@@ -10,6 +10,7 @@ interface ReadingProgress {
     date: string;
     pagesRead: number;
   }[];
+  dailyGoal: number;
 }
 
 const STORAGE_KEY = "quran-reading-progress";
@@ -27,13 +28,14 @@ const getStoredProgress = (): ReadingProgress => {
     bookmarks: [],
     completedPages: [],
     dailyProgress: [],
+    dailyGoal: 6,
   };
 };
 
 // Save progress to localStorage
-const saveProgress = (progress: ReadingProgress): Promise<ReadingProgress> => {
+const saveProgress = async (progress: ReadingProgress): Promise<ReadingProgress> => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  return Promise.resolve(progress);
+  return progress;
 };
 
 // Custom hooks for progress management
