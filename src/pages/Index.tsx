@@ -32,7 +32,7 @@ const hizbData = Array.from({ length: 60 }, (_, i) => ({
 const Index = () => {
   const { data: surahs, isLoading, error } = useSurahs();
   const { toast } = useToast();
-  const { progress, setDailyGoal } = useQuranProgress();
+  const { progress } = useQuranProgress();
   const [selectedReciter, setSelectedReciter] = React.useState(() => 
     localStorage.getItem('selectedReciter') || DEFAULT_RECITER
   );
@@ -58,13 +58,6 @@ const Index = () => {
       description: `Selected ${languages.find(l => l.code === value)?.name}`,
     });
   };
-
-  // Mock data for Page view (replace with actual API data later)
-  const pageData = Array.from({ length: 604 }, (_, i) => ({
-    number: i + 1,
-    surahName: "Al-Fatiha", // Replace with actual surah
-    versesCount: 7, // Replace with actual count
-  }));
 
   const renderContent = () => {
     switch (activeView) {
@@ -167,9 +160,9 @@ const Index = () => {
       
       <div className="container pt-64 pb-16">
         <QuranStats 
-          dailyProgress={progress.dailyProgress}
-          totalProgress={progress.totalProgress}
-          bookmarks={progress.bookmarks.length}
+          dailyProgress={progress?.dailyProgress}
+          totalProgress={progress?.totalProgress}
+          bookmarks={progress?.bookmarks?.length}
         />
         {renderContent()}
       </div>

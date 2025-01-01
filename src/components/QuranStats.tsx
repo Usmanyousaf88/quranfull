@@ -4,15 +4,19 @@ import { Progress } from "@/components/ui/progress";
 import { Book, BookOpen, Bookmark } from "lucide-react";
 
 interface QuranStatsProps {
-  dailyProgress: {
+  dailyProgress?: {
     pagesRead: number;
     dailyGoal: number;
   };
-  totalProgress: number;
-  bookmarks: number;
+  totalProgress?: number;
+  bookmarks?: number;
 }
 
-const QuranStats = ({ dailyProgress, totalProgress, bookmarks }: QuranStatsProps) => {
+const QuranStats = ({ 
+  dailyProgress = { pagesRead: 0, dailyGoal: 6 },
+  totalProgress = 0,
+  bookmarks = 0 
+}: QuranStatsProps) => {
   const dailyProgressPercentage = (dailyProgress.pagesRead / dailyProgress.dailyGoal) * 100;
 
   return (
