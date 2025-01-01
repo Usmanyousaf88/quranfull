@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import SurahPage from "./pages/SurahPage";
 import JuzPage from "./pages/JuzPage";
 import PagePage from "./pages/PagePage";
+import HizbPage from "./pages/HizbPage";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/surah/:id" element={<SurahPage />} />
           <Route path="/juz/:id" element={<JuzPage />} />
           <Route path="/page/:id" element={<PagePage />} />
+          <Route path="/hizb/:id" element={<HizbPage />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

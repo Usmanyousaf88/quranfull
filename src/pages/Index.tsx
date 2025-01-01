@@ -3,6 +3,7 @@ import { useSurahs } from "../services/quranApi";
 import SurahCard from "../components/SurahCard";
 import JuzCard from "../components/JuzCard";
 import PageCard from "../components/PageCard";
+import HizbCard from "../components/HizbCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { reciters, DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
@@ -15,6 +16,14 @@ import QuranStats from "@/components/QuranStats";
 const juzData = Array.from({ length: 30 }, (_, i) => ({
   number: i + 1,
   versesCount: 200, // This is mock data
+  startSurah: "Al-Fatiha", // This is mock data
+  endSurah: "Al-Baqarah", // This is mock data
+}));
+
+// Mock data for Hizb view
+const hizbData = Array.from({ length: 60 }, (_, i) => ({
+  number: i + 1,
+  versesCount: 100, // This is mock data
   startSurah: "Al-Fatiha", // This is mock data
   endSurah: "Al-Baqarah", // This is mock data
 }));
@@ -68,20 +77,21 @@ const Index = () => {
       case "page":
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {pageData.map((page) => (
+            {Array.from({ length: 604 }, (_, i) => ({
+              number: i + 1,
+              surahName: "Al-Fatiha",
+              versesCount: 7,
+            })).map((page) => (
               <PageCard key={page.number} {...page} />
             ))}
           </div>
         );
       case "hizb":
         return (
-          <div className="text-center py-12">
-            <h2 className="text-2xl font-semibold text-gray-600">
-              Coming Soon
-            </h2>
-            <p className="text-gray-500 mt-2">
-              This view will be available in the next update.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {hizbData.map((hizb) => (
+              <HizbCard key={hizb.number} {...hizb} />
+            ))}
           </div>
         );
       default:
