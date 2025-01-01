@@ -4,8 +4,10 @@ import SurahCard from "../components/SurahCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { reciters, DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
-import { useToast } from "../components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import SearchBar from "@/components/SearchBar";
+import QuranNavigation from "@/components/QuranNavigation";
+import QuranStats from "@/components/QuranStats";
 
 const Index = () => {
   const { data: surahs, isLoading, error } = useSurahs();
@@ -16,6 +18,7 @@ const Index = () => {
   const [selectedLanguage, setSelectedLanguage] = React.useState(() => 
     localStorage.getItem('selectedLanguage') || languages[1].code
   );
+  const [activeView, setActiveView] = React.useState("surah");
 
   const handleReciterChange = (value: string) => {
     setSelectedReciter(value);
@@ -57,6 +60,10 @@ const Index = () => {
         <div className="container mx-auto py-4">
           <div className="flex flex-col gap-4">
             <h1 className="text-4xl font-bold text-center">The Noble Quran</h1>
+            <QuranNavigation 
+              activeView={activeView}
+              onViewChange={setActiveView}
+            />
             <div className="max-w-md mx-auto space-y-4">
               <SearchBar surahs={surahs || []} />
               <Select value={selectedReciter} onValueChange={handleReciterChange}>
@@ -90,6 +97,7 @@ const Index = () => {
       </div>
       
       <div className="container pt-64 pb-16">
+        <QuranStats />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {surahs?.map((surah) => (
             <SurahCard key={surah.number} {...surah} />
