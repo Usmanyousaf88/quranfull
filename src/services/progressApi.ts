@@ -16,7 +16,7 @@ interface ReadingProgress {
 const STORAGE_KEY = "quran-reading-progress";
 
 // Helper to get initial progress from localStorage
-const getStoredProgress = (): ReadingProgress => {
+const getStoredProgress = async (): Promise<ReadingProgress> => {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored) {
     return JSON.parse(stored);
@@ -42,8 +42,7 @@ const saveProgress = async (progress: ReadingProgress): Promise<ReadingProgress>
 export const useReadingProgress = () => {
   return useQuery({
     queryKey: ["reading-progress"],
-    queryFn: () => Promise.resolve(getStoredProgress()),
-    staleTime: Infinity,
+    queryFn: getStoredProgress,
   });
 };
 
@@ -52,7 +51,7 @@ export const useUpdateProgress = () => {
   
   return useMutation({
     mutationFn: async (newProgress: Partial<ReadingProgress>) => {
-      const currentProgress = getStoredProgress();
+      const currentProgress = await getStoredProgress();
       const updatedProgress = { ...currentProgress, ...newProgress };
       return saveProgress(updatedProgress);
     },
@@ -67,7 +66,7 @@ export const useAddBookmark = () => {
   
   return useMutation({
     mutationFn: async (verseId: string) => {
-      const currentProgress = getStoredProgress();
+      const currentProgress = await getStoredProgress();
       const bookmarks = currentProgress.bookmarks.includes(verseId)
         ? currentProgress.bookmarks.filter(id => id !== verseId)
         : [...currentProgress.bookmarks, verseId];
@@ -85,13 +84,15 @@ export const useMarkPageComplete = () => {
   
   return useMutation({
     mutationFn: async (pageNumber: number) => {
-      const currentProgress = getStoredProgress();
+      const currentProgress = await getStoredProgress();
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Update completed pages
       const completedPages = currentProgress.completedPages.includes(pageNumber)
         ? currentProgress.completedPages
         : [...currentProgress.completedPages, pageNumber];
       
       // Update daily progress
-      const today = new Date().toISOString().split('T')[0];
       const dailyProgress = [...currentProgress.dailyProgress];
       const todayProgress = dailyProgress.find(p => p.date === today);
       
