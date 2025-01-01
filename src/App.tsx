@@ -9,6 +9,7 @@ import JuzPage from "./pages/JuzPage";
 import PagePage from "./pages/PagePage";
 import HizbPage from "./pages/HizbPage";
 import RukuPage from "./pages/RukuPage";
+import HizbQuarterPage from "./pages/HizbQuarterPage";
 import ComingSoon from "./components/ComingSoon";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/juz/:id" element={<JuzPage />} />
           <Route path="/page/:id" element={<PagePage />} />
           <Route path="/hizb/:id" element={<HizbPage />} />
+          <Route path="/hizb-quarter/:id" element={<HizbQuarterPage />} />
           <Route path="/ruku/:id" element={<RukuPage />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
         </Routes>

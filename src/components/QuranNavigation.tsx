@@ -54,6 +54,13 @@ const QuranNavigation: React.FC<QuranNavigationProps> = ({
             Hizb
           </TabsTrigger>
           <TabsTrigger
+            value="hizbQuarter"
+            onClick={() => handleViewChange("hizbQuarter")}
+            className="text-lg"
+          >
+            Hizb Quarter
+          </TabsTrigger>
+          <TabsTrigger
             value="ruku"
             onClick={() => handleViewChange("ruku")}
             className="text-lg"
