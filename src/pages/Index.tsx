@@ -1,5 +1,5 @@
 import React from "react";
-import { useSurahs } from "../services/quranApi";
+import { useSurahs, useAllPages } from "../services/quranApi";
 import { useReadingProgress } from "../services/progressApi";
 import SurahCard from "../components/SurahCard";
 import JuzCard from "../components/JuzCard";
@@ -27,7 +27,8 @@ const hizbData = Array.from({ length: 60 }, (_, i) => ({
 }));
 
 const Index = () => {
-  const { data: surahs, isLoading, error } = useSurahs();
+  const { data: surahs, isLoading: surahsLoading, error: surahsError } = useSurahs();
+  const { data: pages, isLoading: pagesLoading, error: pagesError } = useAllPages();
   const { data: readingProgress } = useReadingProgress();
   
   const [selectedReciter, setSelectedReciter] = React.useState(() => 
@@ -59,13 +60,15 @@ const Index = () => {
           </div>
         );
       case "page":
+        if (pagesLoading) {
+          return <div className="text-xl text-center">Loading Pages...</div>;
+        }
+        if (pagesError) {
+          return <div className="text-xl text-red-500 text-center">Error loading pages</div>;
+        }
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 604 }, (_, i) => ({
-              number: i + 1,
-              surahName: "Al-Fatiha",
-              versesCount: 7,
-            })).map((page) => (
+            {pages?.map((page) => (
               <PageCard key={page.number} {...page} />
             ))}
           </div>
@@ -79,6 +82,12 @@ const Index = () => {
           </div>
         );
       default:
+        if (surahsLoading) {
+          return <div className="text-xl text-center">Loading Surahs...</div>;
+        }
+        if (surahsError) {
+          return <div className="text-xl text-red-500 text-center">Error loading surahs</div>;
+        }
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {surahs?.map((surah) => (
@@ -89,7 +98,7 @@ const Index = () => {
     }
   };
 
-  if (isLoading) {
+  if (surahsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">Loading Surahs...</div>
@@ -97,7 +106,7 @@ const Index = () => {
     );
   }
 
-  if (error) {
+  if (surahsError) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl text-red-500">Error loading Surahs</div>

@@ -3,24 +3,31 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { usePage } from "../services/quranApi";
 
 const PagePage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const pageNumber = Number(id);
 
-  // Temporary mock data until API integration
-  const pageData = {
-    number: Number(id),
-    verses: [
-      {
-        number: 1,
-        text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
-        translation: "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
-        numberInSurah: 1
-      },
-      // Add more verses as needed
-    ]
-  };
+  const { data: pageData, isLoading, error } = usePage(pageNumber);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading Page...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    toast.error("Failed to load page data");
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl text-red-500">Error loading page data</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -37,10 +44,11 @@ const PagePage = () => {
         <div className="space-y-6">
           <div className="text-center space-y-2">
             <h1 className="text-4xl font-bold">Page {id}</h1>
+            <p className="text-xl text-gray-600">{pageData?.surahName}</p>
           </div>
 
           <div className="grid gap-6">
-            {pageData.verses.map((verse) => (
+            {pageData?.verses.map((verse) => (
               <div
                 key={verse.number}
                 className="bg-white p-6 rounded-lg shadow-sm space-y-4"
