@@ -11,6 +11,14 @@ import SearchBar from "@/components/SearchBar";
 import QuranNavigation from "@/components/QuranNavigation";
 import QuranStats from "@/components/QuranStats";
 
+// Mock data for Juz view
+const juzData = Array.from({ length: 30 }, (_, i) => ({
+  number: i + 1,
+  versesCount: 200, // This is mock data
+  startSurah: "Al-Fatiha", // This is mock data
+  endSurah: "Al-Baqarah", // This is mock data
+}));
+
 const Index = () => {
   const { data: surahs, isLoading, error } = useSurahs();
   const { toast } = useToast();
