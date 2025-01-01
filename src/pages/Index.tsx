@@ -1,6 +1,7 @@
 import React from "react";
 import { useSurahs } from "../services/quranApi";
 import SurahCard from "../components/SurahCard";
+import JuzCard from "../components/JuzCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { reciters, DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
@@ -36,6 +37,47 @@ const Index = () => {
       title: "Translation Language Changed",
       description: `Selected ${languages.find(l => l.code === value)?.name}`,
     });
+  };
+
+  // Mock data for Juz view (replace with actual API data later)
+  const juzData = Array.from({ length: 30 }, (_, i) => ({
+    number: i + 1,
+    versesCount: 200, // Replace with actual count
+    startSurah: "Al-Fatiha", // Replace with actual surah
+    endSurah: "Al-Baqarah", // Replace with actual surah
+  }));
+
+  const renderContent = () => {
+    switch (activeView) {
+      case "juz":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {juzData.map((juz) => (
+              <JuzCard key={juz.number} {...juz} />
+            ))}
+          </div>
+        );
+      case "page":
+      case "hizb":
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-semibold text-gray-600">
+              Coming Soon
+            </h2>
+            <p className="text-gray-500 mt-2">
+              This view will be available in the next update.
+            </p>
+          </div>
+        );
+      default:
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {surahs?.map((surah) => (
+              <SurahCard key={surah.number} {...surah} />
+            ))}
+          </div>
+        );
+    }
   };
 
   if (isLoading) {
@@ -98,11 +140,7 @@ const Index = () => {
       
       <div className="container pt-64 pb-16">
         <QuranStats />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {surahs?.map((surah) => (
-            <SurahCard key={surah.number} {...surah} />
-          ))}
-        </div>
+        {renderContent()}
       </div>
     </div>
   );

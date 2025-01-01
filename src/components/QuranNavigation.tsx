@@ -14,14 +14,11 @@ const QuranNavigation: React.FC<QuranNavigationProps> = ({
   const { toast } = useToast();
 
   const handleViewChange = (view: string) => {
-    if (view !== "surah") {
-      toast({
-        title: "Coming Soon",
-        description: `The ${view} view will be available in the next update.`,
-      });
-      return;
-    }
     onViewChange(view);
+    toast({
+      title: `Switched to ${view.charAt(0).toUpperCase() + view.slice(1)} View`,
+      description: `Now viewing the Quran organized by ${view}.`,
+    });
   };
 
   return (
