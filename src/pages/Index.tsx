@@ -1,38 +1,35 @@
 import React from "react";
 import { useSurahs } from "../services/quranApi";
+import { useReadingProgress } from "../services/progressApi";
 import SurahCard from "../components/SurahCard";
 import JuzCard from "../components/JuzCard";
 import PageCard from "../components/PageCard";
 import HizbCard from "../components/HizbCard";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { reciters, DEFAULT_RECITER } from "../utils/reciters";
-import { languages } from "../utils/languages";
-import { useToast } from "@/components/ui/use-toast";
-import SearchBar from "@/components/SearchBar";
 import QuranNavigation from "@/components/QuranNavigation";
 import QuranStats from "@/components/QuranStats";
-import { useQuranProgress } from "../hooks/useQuranProgress";
+import QuranHeader from "@/components/QuranHeader";
+import { DEFAULT_RECITER } from "../utils/reciters";
+import { languages } from "../utils/languages";
 
-// Mock data for Juz view
+// Mock data for Juz and Hizb views
 const juzData = Array.from({ length: 30 }, (_, i) => ({
   number: i + 1,
-  versesCount: 200, // This is mock data
-  startSurah: "Al-Fatiha", // This is mock data
-  endSurah: "Al-Baqarah", // This is mock data
+  versesCount: 200,
+  startSurah: "Al-Fatiha",
+  endSurah: "Al-Baqarah",
 }));
 
-// Mock data for Hizb view
 const hizbData = Array.from({ length: 60 }, (_, i) => ({
   number: i + 1,
-  versesCount: 100, // This is mock data
-  startSurah: "Al-Fatiha", // This is mock data
-  endSurah: "Al-Baqarah", // This is mock data
+  versesCount: 100,
+  startSurah: "Al-Fatiha",
+  endSurah: "Al-Baqarah",
 }));
 
 const Index = () => {
   const { data: surahs, isLoading, error } = useSurahs();
-  const { toast } = useToast();
-  const { progress } = useQuranProgress();
+  const { data: readingProgress } = useReadingProgress();
+  
   const [selectedReciter, setSelectedReciter] = React.useState(() => 
     localStorage.getItem('selectedReciter') || DEFAULT_RECITER
   );
@@ -44,19 +41,11 @@ const Index = () => {
   const handleReciterChange = (value: string) => {
     setSelectedReciter(value);
     localStorage.setItem('selectedReciter', value);
-    toast({
-      title: "Reciter Changed",
-      description: `Selected ${reciters.find(r => r.identifier === value)?.name}`,
-    });
   };
 
   const handleLanguageChange = (value: string) => {
     setSelectedLanguage(value);
     localStorage.setItem('selectedLanguage', value);
-    toast({
-      title: "Translation Language Changed",
-      description: `Selected ${languages.find(l => l.code === value)?.name}`,
-    });
   };
 
   const renderContent = () => {
@@ -116,54 +105,35 @@ const Index = () => {
     );
   }
 
+  // Calculate today's progress
+  const today = new Date().toISOString().split('T')[0];
+  const todayProgress = readingProgress?.dailyProgress?.find(p => p.date === today);
+  
   return (
     <div className="min-h-screen">
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-gray-200">
-        <div className="container mx-auto py-4">
-          <div className="flex flex-col gap-4">
-            <h1 className="text-4xl font-bold text-center">The Noble Quran</h1>
-            <QuranNavigation 
-              activeView={activeView}
-              onViewChange={setActiveView}
-            />
-            <div className="max-w-md mx-auto space-y-4">
-              <SearchBar surahs={surahs || []} />
-              <Select value={selectedReciter} onValueChange={handleReciterChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a reciter" />
-                </SelectTrigger>
-                <SelectContent>
-                  {reciters.map((reciter) => (
-                    <SelectItem key={reciter.id} value={reciter.identifier}>
-                      {reciter.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select translation language" />
-                </SelectTrigger>
-                <SelectContent>
-                  {languages.map((language) => (
-                    <SelectItem key={language.id} value={language.code}>
-                      {language.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-      </div>
+      <QuranHeader
+        selectedReciter={selectedReciter}
+        selectedLanguage={selectedLanguage}
+        onReciterChange={handleReciterChange}
+        onLanguageChange={handleLanguageChange}
+        surahs={surahs || []}
+      />
       
       <div className="container pt-64 pb-16">
-        <QuranStats 
-          dailyProgress={progress?.dailyProgress}
-          totalProgress={progress?.totalProgress}
-          bookmarks={progress?.bookmarks?.length}
+        <QuranNavigation 
+          activeView={activeView}
+          onViewChange={setActiveView}
         />
+        
+        <QuranStats 
+          dailyProgress={{
+            pagesRead: todayProgress?.pagesRead || 0,
+            dailyGoal: 6,
+          }}
+          totalProgress={Math.round((readingProgress?.completedPages?.length || 0) / 604 * 100)}
+          bookmarks={readingProgress?.bookmarks?.length || 0}
+        />
+        
         {renderContent()}
       </div>
     </div>
