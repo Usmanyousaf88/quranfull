@@ -3,7 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Book, BookOpen, Bookmark } from "lucide-react";
 
-const QuranStats = () => {
+interface QuranStatsProps {
+  dailyProgress: {
+    pagesRead: number;
+    dailyGoal: number;
+  };
+  totalProgress: number;
+  bookmarks: number;
+}
+
+const QuranStats = ({ dailyProgress, totalProgress, bookmarks }: QuranStatsProps) => {
+  const dailyProgressPercentage = (dailyProgress.pagesRead / dailyProgress.dailyGoal) * 100;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <Card>
@@ -13,8 +24,10 @@ const QuranStats = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Progress value={33} className="h-2" />
-            <p className="text-xs text-muted-foreground">2 of 6 pages read</p>
+            <Progress value={dailyProgressPercentage} className="h-2" />
+            <p className="text-xs text-muted-foreground">
+              {dailyProgress.pagesRead} of {dailyProgress.dailyGoal} pages read
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -25,8 +38,8 @@ const QuranStats = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <Progress value={15} className="h-2" />
-            <p className="text-xs text-muted-foreground">15% completed</p>
+            <Progress value={totalProgress} className="h-2" />
+            <p className="text-xs text-muted-foreground">{totalProgress}% completed</p>
           </div>
         </CardContent>
       </Card>
@@ -37,7 +50,7 @@ const QuranStats = () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
-            <p className="text-2xl font-bold">5</p>
+            <p className="text-2xl font-bold">{bookmarks}</p>
             <p className="text-xs text-muted-foreground">Saved locations</p>
           </div>
         </CardContent>

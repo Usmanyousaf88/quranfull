@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import SearchBar from "@/components/SearchBar";
 import QuranNavigation from "@/components/QuranNavigation";
 import QuranStats from "@/components/QuranStats";
+import { useQuranProgress } from "../hooks/useQuranProgress";
 
 // Mock data for Juz view
 const juzData = Array.from({ length: 30 }, (_, i) => ({
@@ -31,6 +32,7 @@ const hizbData = Array.from({ length: 60 }, (_, i) => ({
 const Index = () => {
   const { data: surahs, isLoading, error } = useSurahs();
   const { toast } = useToast();
+  const { progress, setDailyGoal } = useQuranProgress();
   const [selectedReciter, setSelectedReciter] = React.useState(() => 
     localStorage.getItem('selectedReciter') || DEFAULT_RECITER
   );
@@ -164,7 +166,11 @@ const Index = () => {
       </div>
       
       <div className="container pt-64 pb-16">
-        <QuranStats />
+        <QuranStats 
+          dailyProgress={progress.dailyProgress}
+          totalProgress={progress.totalProgress}
+          bookmarks={progress.bookmarks.length}
+        />
         {renderContent()}
       </div>
     </div>
