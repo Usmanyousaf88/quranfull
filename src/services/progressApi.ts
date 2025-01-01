@@ -49,7 +49,7 @@ export const useUpdateProgress = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (newProgress: Partial<ReadingProgress>) => {
+    mutationFn: async (newProgress: Partial<ReadingProgress>) => {
       const currentProgress = getStoredProgress();
       const updatedProgress = { ...currentProgress, ...newProgress };
       return saveProgress(updatedProgress);
@@ -64,7 +64,7 @@ export const useAddBookmark = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (verseId: string) => {
+    mutationFn: async (verseId: string) => {
       const currentProgress = getStoredProgress();
       const bookmarks = currentProgress.bookmarks.includes(verseId)
         ? currentProgress.bookmarks.filter(id => id !== verseId)
@@ -82,7 +82,7 @@ export const useMarkPageComplete = () => {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: (pageNumber: number) => {
+    mutationFn: async (pageNumber: number) => {
       const currentProgress = getStoredProgress();
       const completedPages = currentProgress.completedPages.includes(pageNumber)
         ? currentProgress.completedPages
