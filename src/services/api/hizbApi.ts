@@ -13,9 +13,12 @@ export const useHizbDetail = (hizbNumber: number, edition: string = "en.sahih") 
   return useQuery({
     queryKey: ["hizb", hizbNumber, edition],
     queryFn: async () => {
+      // Convert hizb number to hizbQuarter (each hizb has 4 quarters)
+      const quarterNumber = (hizbNumber - 1) * 4 + 1;
+      
       const [arabicData, translationData] = await Promise.all([
-        fetchWithEdition(`/hizb/${hizbNumber}`, "ar.alafasy"),
-        fetchWithEdition(`/hizb/${hizbNumber}`, edition),
+        fetchWithEdition(`/hizbQuarter/${quarterNumber}`, "ar.alafasy"),
+        fetchWithEdition(`/hizbQuarter/${quarterNumber}`, edition),
       ]);
 
       const verses = arabicData.data.ayahs.map((verse: any, index: number) => ({

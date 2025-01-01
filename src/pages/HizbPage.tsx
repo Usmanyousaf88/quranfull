@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useHizbDetail } from "@/services/api/hizbApi";
 import { useToast } from "@/components/ui/use-toast";
@@ -12,6 +12,16 @@ const HizbPage = () => {
 
   const { data: hizbData, isLoading, error } = useHizbDetail(hizbNumber);
 
+  useEffect(() => {
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load Hizb data",
+      });
+    }
+  }, [error, toast]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -21,11 +31,6 @@ const HizbPage = () => {
   }
 
   if (error) {
-    toast({
-      variant: "destructive",
-      title: "Error",
-      description: "Failed to load Hizb data",
-    });
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl text-red-500">Error loading Hizb {hizbNumber}</div>
