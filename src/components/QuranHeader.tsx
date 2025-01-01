@@ -43,6 +43,7 @@ const QuranHeader: React.FC<QuranHeaderProps> = ({
       <div className="container mx-auto py-4">
         <div className="flex flex-col gap-4">
           <h1 className="text-4xl font-bold text-center">The Noble Quran</h1>
+          <p className="text-center text-gray-600 italic">In loving memory of Muhammad Yousaf Mohd Rafi</p>
           <div className="max-w-md mx-auto space-y-4">
             <SearchBar surahs={surahs} />
             <Select value={selectedReciter} onValueChange={handleReciterChange}>

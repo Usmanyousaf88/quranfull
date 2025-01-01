@@ -9,6 +9,7 @@ import RukuCard from "../components/RukuCard";
 import QuranNavigation from "@/components/QuranNavigation";
 import QuranStats from "@/components/QuranStats";
 import QuranHeader from "@/components/QuranHeader";
+import QuranFooter from "@/components/QuranFooter";
 import { DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
 
@@ -161,6 +162,8 @@ const Index = () => {
         
         {renderContent()}
       </div>
+
+      <QuranFooter />
     </div>
   );
 };
