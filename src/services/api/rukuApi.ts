@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { baseApi } from "./baseApi";
+import { API_BASE_URL } from "./baseApi";
 
 interface RukuVerse {
   number: number;
