@@ -2,6 +2,7 @@ import React from "react";
 import { useSurahs } from "../services/quranApi";
 import SurahCard from "../components/SurahCard";
 import JuzCard from "../components/JuzCard";
+import PageCard from "../components/PageCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { reciters, DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
@@ -39,12 +40,11 @@ const Index = () => {
     });
   };
 
-  // Mock data for Juz view (replace with actual API data later)
-  const juzData = Array.from({ length: 30 }, (_, i) => ({
+  // Mock data for Page view (replace with actual API data later)
+  const pageData = Array.from({ length: 604 }, (_, i) => ({
     number: i + 1,
-    versesCount: 200, // Replace with actual count
-    startSurah: "Al-Fatiha", // Replace with actual surah
-    endSurah: "Al-Baqarah", // Replace with actual surah
+    surahName: "Al-Fatiha", // Replace with actual surah
+    versesCount: 7, // Replace with actual count
   }));
 
   const renderContent = () => {
@@ -58,6 +58,13 @@ const Index = () => {
           </div>
         );
       case "page":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pageData.map((page) => (
+              <PageCard key={page.number} {...page} />
+            ))}
+          </div>
+        );
       case "hizb":
         return (
           <div className="text-center py-12">
