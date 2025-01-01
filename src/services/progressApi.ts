@@ -31,16 +31,16 @@ const getStoredProgress = (): ReadingProgress => {
 };
 
 // Save progress to localStorage
-const saveProgress = (progress: ReadingProgress) => {
+const saveProgress = (progress: ReadingProgress): Promise<ReadingProgress> => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
-  return progress;
+  return Promise.resolve(progress);
 };
 
 // Custom hooks for progress management
 export const useReadingProgress = () => {
   return useQuery({
     queryKey: ["reading-progress"],
-    queryFn: getStoredProgress,
+    queryFn: () => Promise.resolve(getStoredProgress()),
     staleTime: Infinity,
   });
 };
