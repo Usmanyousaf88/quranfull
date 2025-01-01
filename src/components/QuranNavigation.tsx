@@ -53,6 +53,13 @@ const QuranNavigation: React.FC<QuranNavigationProps> = ({
           >
             Hizb
           </TabsTrigger>
+          <TabsTrigger
+            value="ruku"
+            onClick={() => handleViewChange("ruku")}
+            className="text-lg"
+          >
+            Ruku
+          </TabsTrigger>
         </TabsList>
       </Tabs>
     </div>

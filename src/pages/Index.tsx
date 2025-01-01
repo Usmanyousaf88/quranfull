@@ -5,13 +5,14 @@ import SurahCard from "../components/SurahCard";
 import JuzCard from "../components/JuzCard";
 import PageCard from "../components/PageCard";
 import HizbCard from "../components/HizbCard";
+import RukuCard from "../components/RukuCard";
 import QuranNavigation from "@/components/QuranNavigation";
 import QuranStats from "@/components/QuranStats";
 import QuranHeader from "@/components/QuranHeader";
 import { DEFAULT_RECITER } from "../utils/reciters";
 import { languages } from "../utils/languages";
 
-// Mock data for Juz and Hizb views
+// Mock data for Juz, Hizb, and Ruku views
 const juzData = Array.from({ length: 30 }, (_, i) => ({
   number: i + 1,
   versesCount: 200,
@@ -22,6 +23,13 @@ const juzData = Array.from({ length: 30 }, (_, i) => ({
 const hizbData = Array.from({ length: 60 }, (_, i) => ({
   number: i + 1,
   versesCount: 100,
+  startSurah: "Al-Fatiha",
+  endSurah: "Al-Baqarah",
+}));
+
+const rukuData = Array.from({ length: 40 }, (_, i) => ({
+  number: i + 1,
+  versesCount: 50,
   startSurah: "Al-Fatiha",
   endSurah: "Al-Baqarah",
 }));
@@ -81,6 +89,14 @@ const Index = () => {
             ))}
           </div>
         );
+      case "ruku":
+        return (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rukuData.map((ruku) => (
+              <RukuCard key={ruku.number} {...ruku} />
+            ))}
+          </div>
+        );
       default:
         if (surahsLoading) {
           return <div className="text-xl text-center">Loading Surahs...</div>;
@@ -117,7 +133,7 @@ const Index = () => {
   // Calculate today's progress
   const today = new Date().toISOString().split('T')[0];
   const todayProgress = readingProgress?.dailyProgress?.find(p => p.date === today);
-  
+
   return (
     <div className="min-h-screen">
       <QuranHeader
