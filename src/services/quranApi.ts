@@ -32,6 +32,15 @@ interface JuzDetail {
   verses: Verse[];
 }
 
+interface SearchResult {
+  verse: Verse;
+  surah: {
+    number: number;
+    name: string;
+    englishName: string;
+  };
+}
+
 const API_BASE_URL = "https://api.alquran.cloud/v1";
 
 export const useSurahs = () => {
@@ -126,5 +135,33 @@ export const useJuzDetail = (juzNumber: number) => {
         throw error;
       }
     },
+  });
+};
+
+export const useSearchVerses = (query: string, language: string = 'en.sahih') => {
+  return useQuery({
+    queryKey: ["search", query, language],
+    queryFn: async () => {
+      if (!query || query.length < 3) {
+        return [];
+      }
+
+      try {
+        const response = await fetch(
+          `${API_BASE_URL}/search/${encodeURIComponent(query)}/${language}`
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch search results');
+        }
+
+        const data = await response.json();
+        return data.data.matches as SearchResult[];
+      } catch (error) {
+        console.error('Error searching verses:', error);
+        throw error;
+      }
+    },
+    enabled: query.length >= 3,
   });
 };
