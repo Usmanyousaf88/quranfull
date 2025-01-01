@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Star } from "lucide-react";
 
 interface SurahCardProps {
   number: number;
@@ -7,6 +8,7 @@ interface SurahCardProps {
   englishName: string;
   englishNameTranslation: string;
   numberOfAyahs: number;
+  sajdaAyahs?: number[];
 }
 
 const SurahCard: React.FC<SurahCardProps> = ({
@@ -15,6 +17,7 @@ const SurahCard: React.FC<SurahCardProps> = ({
   englishName,
   englishNameTranslation,
   numberOfAyahs,
+  sajdaAyahs = [],
 }) => {
   const navigate = useNavigate();
 
@@ -26,7 +29,15 @@ const SurahCard: React.FC<SurahCardProps> = ({
             {number}
           </div>
           <div>
-            <h3 className="text-xl font-semibold">{englishName}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-xl font-semibold">{englishName}</h3>
+              {sajdaAyahs.length > 0 && (
+                <div className="flex items-center text-amber-500" title="Contains Sajda verse(s)">
+                  <Star className="h-4 w-4" />
+                  <span className="text-sm ml-1">{sajdaAyahs.length}</span>
+                </div>
+              )}
+            </div>
             <p className="text-gray-600">{englishNameTranslation}</p>
           </div>
         </div>
