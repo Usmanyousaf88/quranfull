@@ -9,6 +9,7 @@ import JuzPage from "./pages/JuzPage";
 import PagePage from "./pages/PagePage";
 import HizbPage from "./pages/HizbPage";
 import RukuPage from "./pages/RukuPage";
+import ManzilPage from "./pages/ManzilPage";
 import HizbQuarterPage from "./pages/HizbQuarterPage";
 import ComingSoon from "./components/ComingSoon";
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/hizb/:id" element={<HizbPage />} />
           <Route path="/hizb-quarter/:id" element={<HizbQuarterPage />} />
           <Route path="/ruku/:id" element={<RukuPage />} />
+          <Route path="/manzil/:id" element={<ManzilPage />} />
           <Route path="/coming-soon" element={<ComingSoon />} />
         </Routes>
       </BrowserRouter>

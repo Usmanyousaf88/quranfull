@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL, Verse } from "./baseApi";
 
-interface RukuResponse {
+interface ManzilResponse {
   code: number;
   status: string;
   data: {
@@ -18,16 +18,16 @@ interface RukuResponse {
   };
 }
 
-export const useRukuDetail = (
-  rukuNumber: number,
+export const useManzil = (
+  manzilNumber: number,
   edition: string = "quran-uthmani",
   offset?: number,
   limit?: number
 ) => {
   return useQuery({
-    queryKey: ["ruku", rukuNumber, edition, offset, limit],
+    queryKey: ["manzil", manzilNumber, edition, offset, limit],
     queryFn: async () => {
-      let url = `${API_BASE_URL}/ruku/${rukuNumber}/${edition}`;
+      let url = `${API_BASE_URL}/manzil/${manzilNumber}/${edition}`;
       if (offset !== undefined || limit !== undefined) {
         url += `?${offset !== undefined ? `offset=${offset}` : ""}${
           limit !== undefined ? `&limit=${limit}` : ""
@@ -35,11 +35,11 @@ export const useRukuDetail = (
       }
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("Failed to fetch ruku");
+        throw new Error("Failed to fetch manzil");
       }
-      const data: RukuResponse = await response.json();
+      const data: ManzilResponse = await response.json();
       return data.data;
     },
-    enabled: rukuNumber >= 1 && rukuNumber <= 556,
+    enabled: manzilNumber >= 1 && manzilNumber <= 7,
   });
 };

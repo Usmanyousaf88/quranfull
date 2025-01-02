@@ -67,6 +67,13 @@ const QuranNavigation: React.FC<QuranNavigationProps> = ({
           >
             Ruku
           </TabsTrigger>
+          <TabsTrigger
+            value="manzil"
+            onClick={() => handleViewChange("manzil")}
+            className="text-lg"
+          >
+            Manzil
+          </TabsTrigger>
         </TabsList>
       </Tabs>
     </div>

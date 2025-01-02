@@ -7,3 +7,4 @@ export * from './api/searchApi';
 export * from './api/rukuApi';
 export * from './api/editionsApi';
 export * from './api/ayahApi';
+export * from './api/manzilApi';
