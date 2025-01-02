@@ -1,4 +1,5 @@
-import { API_BASE_URL, fetchWithEdition } from './baseApi';
+import { useQuery } from "@tanstack/react-query";
+import { API_BASE_URL } from "./baseApi";
 
 interface AyahResponse {
   code: number;
@@ -40,11 +41,11 @@ interface MultipleEditionsResponse {
   data: AyahResponse['data'][];
 }
 
-export const useAyah = (reference: string | number, edition: string = 'quran-uthmani') => {
+export const useAyah = (reference: string | number) => {
   return useQuery({
-    queryKey: ['ayah', reference, edition],
+    queryKey: ['ayah', reference],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/ayah/${reference}/${edition}`);
+      const response = await fetch(`${API_BASE_URL}/ayah/${reference}`);
       if (!response.ok) {
         throw new Error('Failed to fetch ayah');
       }
@@ -57,7 +58,7 @@ export const useAyah = (reference: string | number, edition: string = 'quran-uth
 
 export const useAyahEditions = (reference: string | number, editions: string[]) => {
   return useQuery({
-    queryKey: ['ayah', reference, editions],
+    queryKey: ['ayah-editions', reference, editions],
     queryFn: async () => {
       const editionsString = editions.join(',');
       const response = await fetch(`${API_BASE_URL}/ayah/${reference}/editions/${editionsString}`);

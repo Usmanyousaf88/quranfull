@@ -47,13 +47,13 @@ const RukuPage = () => {
             <h1 className="text-4xl font-bold">Ruku {id}</h1>
             {ruku && (
               <p className="text-xl text-gray-600">
-                {ruku.startSurah} - {ruku.endSurah}
+                Verses from Ruku {ruku.number}
               </p>
             )}
           </div>
 
           <div className="grid gap-6">
-            {ruku?.verses.map((verse) => (
+            {ruku?.ayahs.map((verse) => (
               <div
                 key={verse.number}
                 className="bg-white p-6 rounded-lg shadow-sm space-y-4"

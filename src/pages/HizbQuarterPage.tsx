@@ -1,145 +1,118 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useHizbDetail } from "@/services/api/hizbApi";
-import { useToast } from "@/components/ui/use-toast";
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { useHizbQuarter } from "@/services/api/hizbApi";
+import { toast } from "sonner";
 
 const ITEMS_PER_PAGE = 10;
 
 const HizbQuarterPage = () => {
   const { id } = useParams();
-  const { toast } = useToast();
-  const quarterNumber = parseInt(id || "1");
-  const [page, setPage] = useState(1);
-
-  const { data: hizbData, isLoading, error } = useHizbDetail(
-    Math.ceil(quarterNumber / 4),
-    {
-      offset: (page - 1) * ITEMS_PER_PAGE,
-      limit: ITEMS_PER_PAGE,
-    }
+  const navigate = useNavigate();
+  const [offset, setOffset] = useState(0);
+  
+  const { data: hizbQuarter, isLoading, error } = useHizbQuarter(
+    Number(id),
+    offset,
+    ITEMS_PER_PAGE
   );
 
-  useEffect(() => {
-    if (error) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load Hizb Quarter data",
-      });
+  const handlePreviousPage = () => {
+    if (offset >= ITEMS_PER_PAGE) {
+      setOffset(offset - ITEMS_PER_PAGE);
     }
-  }, [error, toast]);
+  };
+
+  const handleNextPage = () => {
+    if (hizbQuarter && hizbQuarter.ayahs.length === ITEMS_PER_PAGE) {
+      setOffset(offset + ITEMS_PER_PAGE);
+    }
+  };
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading Hizb Quarter {quarterNumber}...</div>
+        <div className="text-xl">Loading Hizb Quarter {id}...</div>
       </div>
     );
   }
 
   if (error) {
+    toast.error("Failed to load Hizb Quarter data");
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">Error loading Hizb Quarter {quarterNumber}</div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="text-xl text-red-500">Error loading Hizb Quarter {id}</div>
+        <Button onClick={() => navigate("/")} variant="outline">
+          Return to Home
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8">
         <Button
-          variant="outline"
-          onClick={() => window.history.back()}
-          className="text-lg"
+          onClick={() => navigate("/")}
+          variant="ghost"
+          className="mb-6 text-lg"
         >
-          <ChevronLeft className="mr-2" />
-          Back
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back to Index
         </Button>
-        <h1 className="text-3xl font-bold">Hizb Quarter {quarterNumber}</h1>
-        <div className="flex gap-2">
-          {quarterNumber > 1 && (
+
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-4xl font-bold">Hizb Quarter {id}</h1>
+            {hizbQuarter && (
+              <p className="text-xl text-gray-600">
+                Showing verses {offset + 1} to {offset + hizbQuarter.ayahs.length}
+              </p>
+            )}
+          </div>
+
+          <div className="grid gap-6">
+            {hizbQuarter?.ayahs.map((verse) => (
+              <div
+                key={verse.number}
+                className="bg-white p-6 rounded-lg shadow-sm space-y-4"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
+                    {verse.numberInSurah}
+                  </div>
+                  <div className="text-2xl font-arabic text-primary text-right">
+                    {verse.text}
+                  </div>
+                </div>
+                <p className="text-gray-600 text-lg">{verse.translation}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-center gap-4 mt-6">
             <Button
+              onClick={handlePreviousPage}
               variant="outline"
-              onClick={() => window.location.href = `/hizb-quarter/${quarterNumber - 1}`}
+              className={offset === 0 ? "opacity-50" : ""}
+              aria-disabled={offset === 0}
             >
-              <ChevronLeft />
+              <ChevronLeft className="mr-2 h-4 w-4" />
               Previous
             </Button>
-          )}
-          {quarterNumber < 240 && (
             <Button
+              onClick={handleNextPage}
               variant="outline"
-              onClick={() => window.location.href = `/hizb-quarter/${quarterNumber + 1}`}
+              className={!hizbQuarter || hizbQuarter.ayahs.length < ITEMS_PER_PAGE ? "opacity-50" : ""}
+              aria-disabled={!hizbQuarter || hizbQuarter.ayahs.length < ITEMS_PER_PAGE}
             >
               Next
-              <ChevronRight />
+              <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
-          )}
+          </div>
         </div>
       </div>
-
-      <div className="space-y-6">
-        {hizbData?.verses.map((verse) => (
-          <div
-            key={verse.number}
-            className="p-6 bg-white rounded-lg shadow-sm border border-gray-200"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-2">
-                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
-                  {verse.number}
-                </span>
-                {verse.sajda && (
-                  <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-sm">
-                    Sajda
-                  </span>
-                )}
-                {verse.ruku && (
-                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
-                    Ruku {verse.ruku}
-                  </span>
-                )}
-                {verse.manzil && (
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                    Manzil {verse.manzil}
-                  </span>
-                )}
-              </div>
-            </div>
-            <p className="text-2xl mb-4 font-arabic text-right leading-loose">
-              {verse.text}
-            </p>
-            <p className="text-gray-600 text-lg">{verse.translation}</p>
-          </div>
-        ))}
-      </div>
-
-      <Pagination className="mt-6">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious 
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page === 1}
-            />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext 
-              onClick={() => setPage(p => p + 1)}
-              disabled={!hizbData?.verses.length || hizbData.verses.length < ITEMS_PER_PAGE}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
     </div>
   );
 };
