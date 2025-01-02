@@ -1,23 +1,24 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useHizbDetail } from "@/services/api/hizbApi";
+import { useHizbQuarter } from "@/services/api/hizbApi";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const HizbPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  const hizbNumber = parseInt(id || "1");
-
-  const { data: hizbData, isLoading, error } = useHizbDetail(hizbNumber);
+  
+  const { data: hizbData, isLoading, error } = useHizbQuarter(Number(id));
 
   useEffect(() => {
     if (error) {
       toast({
-        variant: "destructive",
         title: "Error",
         description: "Failed to load Hizb data",
+        variant: "destructive",
       });
     }
   }, [error, toast]);
@@ -25,87 +26,58 @@ const HizbPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl">Loading Hizb {hizbNumber}...</div>
+        <div className="text-xl">Loading Hizb {id}...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-xl text-red-500">Error loading Hizb {hizbNumber}</div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="text-xl text-red-500">Error loading Hizb {id}</div>
+        <Button onClick={() => navigate("/")} variant="outline">
+          Return to Home
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex justify-between items-center mb-8">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8">
         <Button
-          variant="outline"
-          onClick={() => window.history.back()}
-          className="text-lg"
+          onClick={() => navigate("/")}
+          variant="ghost"
+          className="mb-6 text-lg"
         >
-          <ChevronLeft className="mr-2" />
-          Back
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back to Index
         </Button>
-        <h1 className="text-3xl font-bold">Hizb {hizbNumber}</h1>
-        <div className="flex gap-2">
-          {hizbNumber > 1 && (
-            <Button
-              variant="outline"
-              onClick={() => window.location.href = `/hizb/${hizbNumber - 1}`}
-            >
-              <ChevronLeft />
-              Previous
-            </Button>
-          )}
-          {hizbNumber < 60 && (
-            <Button
-              variant="outline"
-              onClick={() => window.location.href = `/hizb/${hizbNumber + 1}`}
-            >
-              Next
-              <ChevronRight />
-            </Button>
-          )}
-        </div>
-      </div>
 
-      <div className="space-y-6">
-        {hizbData?.verses.map((verse) => (
-          <div
-            key={verse.number}
-            className="p-6 bg-white rounded-lg shadow-sm border border-gray-200"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center gap-2">
-                <span className="bg-primary text-white px-3 py-1 rounded-full text-sm">
-                  {verse.number}
-                </span>
-                {verse.sajda && (
-                  <span className="bg-amber-500 text-white px-3 py-1 rounded-full text-sm">
-                    Sajda
-                  </span>
-                )}
-                {verse.ruku && (
-                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">
-                    Ruku {verse.ruku}
-                  </span>
-                )}
-                {verse.manzil && (
-                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm">
-                    Manzil {verse.manzil}
-                  </span>
-                )}
-              </div>
-            </div>
-            <p className="text-2xl mb-4 font-arabic text-right leading-loose">
-              {verse.text}
-            </p>
-            <p className="text-gray-600 text-lg">{verse.translation}</p>
+        <div className="space-y-6">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold">Hizb {id}</h1>
           </div>
-        ))}
+
+          <div className="grid gap-6">
+            {hizbData?.ayahs.map((verse) => (
+              <div
+                key={verse.number}
+                className="bg-white p-6 rounded-lg shadow-sm space-y-4"
+              >
+                <div className="flex justify-between items-start">
+                  <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center">
+                    {verse.numberInSurah}
+                  </div>
+                  <div className="text-2xl font-arabic text-primary text-right">
+                    {verse.text}
+                  </div>
+                </div>
+                <p className="text-gray-600 text-lg">{verse.translation}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
