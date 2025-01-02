@@ -5,3 +5,4 @@ export * from './api/pageApi';
 export * from './api/juzApi';
 export * from './api/searchApi';
 export * from './api/rukuApi';
+export * from './api/editionsApi';
