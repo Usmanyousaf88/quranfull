@@ -8,3 +8,5 @@ export * from './api/rukuApi';
 export * from './api/editionsApi';
 export * from './api/ayahApi';
 export * from './api/manzilApi';
+export * from './api/hizbApi';
+export * from './api/sajdaApi';

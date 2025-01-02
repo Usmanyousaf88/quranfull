@@ -1,16 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useHizbDetail } from "@/services/api/hizbApi";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 10;
 
 const HizbQuarterPage = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const quarterNumber = parseInt(id || "1");
+  const [page, setPage] = useState(1);
 
-  const { data: hizbData, isLoading, error } = useHizbDetail(Math.ceil(quarterNumber / 4));
+  const { data: hizbData, isLoading, error } = useHizbDetail(
+    Math.ceil(quarterNumber / 4),
+    {
+      offset: (page - 1) * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE,
+    }
+  );
 
   useEffect(() => {
     if (error) {
@@ -107,6 +123,23 @@ const HizbQuarterPage = () => {
           </div>
         ))}
       </div>
+
+      <Pagination className="mt-6">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious 
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={page === 1}
+            />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext 
+              onClick={() => setPage(p => p + 1)}
+              disabled={!hizbData?.verses.length || hizbData.verses.length < ITEMS_PER_PAGE}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };

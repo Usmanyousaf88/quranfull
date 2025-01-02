@@ -1,44 +1,61 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchWithEdition, Verse } from "./baseApi";
+import { API_BASE_URL } from "./baseApi";
+import type { Verse } from "./baseApi";
+
+interface HizbQuarterResponse {
+  code: number;
+  status: string;
+  data: {
+    number: number;
+    ayahs: Verse[];
+    surahs: {
+      number: number;
+      name: string;
+      englishName: string;
+      englishNameTranslation: string;
+      numberOfAyahs: number;
+      revelationType: string;
+    }[];
+  };
+}
 
 export interface HizbDetail {
   number: number;
   verses: Verse[];
-  versesCount: number;
   startSurah: string;
   endSurah: string;
 }
 
-export const useHizbDetail = (hizbNumber: number, edition: string = "en.sahih") => {
+export const useHizbDetail = (
+  hizbNumber: number,
+  options?: { offset?: number; limit?: number }
+) => {
   return useQuery({
-    queryKey: ["hizb", hizbNumber, edition],
+    queryKey: ["hizb", hizbNumber, options?.offset, options?.limit],
     queryFn: async () => {
-      // Convert hizb number to hizbQuarter (each hizb has 4 quarters)
-      const quarterNumber = (hizbNumber - 1) * 4 + 1;
+      let url = `${API_BASE_URL}/hizbQuarter/${hizbNumber}`;
+      if (options?.offset !== undefined || options?.limit !== undefined) {
+        const params = new URLSearchParams();
+        if (options.offset !== undefined) params.append("offset", options.offset.toString());
+        if (options.limit !== undefined) params.append("limit", options.limit.toString());
+        url += `?${params.toString()}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch hizb quarter");
+      }
+      const data: HizbQuarterResponse = await response.json();
       
-      const [arabicData, translationData] = await Promise.all([
-        fetchWithEdition(`/hizbQuarter/${quarterNumber}`, "ar.alafasy"),
-        fetchWithEdition(`/hizbQuarter/${quarterNumber}`, edition),
-      ]);
-
-      const verses = arabicData.data.ayahs.map((verse: any, index: number) => ({
-        number: verse.number,
-        text: verse.text,
-        numberInSurah: verse.numberInSurah,
-        translation: translationData.data.ayahs[index]?.text || "Translation unavailable",
-        audio: `https://cdn.islamic.network/quran/audio/128/ar.alafasy/${verse.number}.mp3`,
-        sajda: verse.sajda || false,
-        ruku: verse.ruku,
-        manzil: verse.manzil,
-      }));
-
-      return {
-        number: hizbNumber,
-        verses,
-        versesCount: verses.length,
-        startSurah: arabicData.data.ayahs[0]?.surah?.name || "",
-        endSurah: arabicData.data.ayahs[arabicData.data.ayahs.length - 1]?.surah?.name || "",
-      } as HizbDetail;
+      // Transform the response to match our interface
+      const result: HizbDetail = {
+        number: data.data.number,
+        verses: data.data.ayahs,
+        startSurah: data.data.surahs[0]?.englishName || "",
+        endSurah: data.data.surahs[data.data.surahs.length - 1]?.englishName || "",
+      };
+      
+      return result;
     },
   });
 };
