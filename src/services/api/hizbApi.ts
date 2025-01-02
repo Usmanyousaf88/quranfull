@@ -19,25 +19,26 @@ interface HizbQuarterResponse {
   };
 }
 
-export interface HizbDetail {
+export interface HizbQuarterData {
   number: number;
-  verses: Verse[];
+  ayahs: Verse[];
   startSurah: string;
   endSurah: string;
 }
 
-export const useHizbDetail = (
+export const useHizbQuarter = (
   hizbNumber: number,
-  options?: { offset?: number; limit?: number }
+  offset?: number,
+  limit?: number
 ) => {
   return useQuery({
-    queryKey: ["hizb", hizbNumber, options?.offset, options?.limit],
+    queryKey: ["hizb", hizbNumber, offset, limit],
     queryFn: async () => {
       let url = `${API_BASE_URL}/hizbQuarter/${hizbNumber}`;
-      if (options?.offset !== undefined || options?.limit !== undefined) {
+      if (offset !== undefined || limit !== undefined) {
         const params = new URLSearchParams();
-        if (options.offset !== undefined) params.append("offset", options.offset.toString());
-        if (options.limit !== undefined) params.append("limit", options.limit.toString());
+        if (offset !== undefined) params.append("offset", offset.toString());
+        if (limit !== undefined) params.append("limit", limit.toString());
         url += `?${params.toString()}`;
       }
 
@@ -48,9 +49,9 @@ export const useHizbDetail = (
       const data: HizbQuarterResponse = await response.json();
       
       // Transform the response to match our interface
-      const result: HizbDetail = {
+      const result: HizbQuarterData = {
         number: data.data.number,
-        verses: data.data.ayahs,
+        ayahs: data.data.ayahs,
         startSurah: data.data.surahs[0]?.englishName || "",
         endSurah: data.data.surahs[data.data.surahs.length - 1]?.englishName || "",
       };
